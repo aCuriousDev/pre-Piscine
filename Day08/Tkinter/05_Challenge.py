@@ -57,7 +57,7 @@ def render_scene():
 
     objects = [
         {'center': np.array([0, 0, -5]), 'radius': 1, 'ambient': sphere_color, 'diffuse': sphere_color,
-         'specular': np.array([1, 1, 1]), 'shininess': 100, 'reflection': 0.5},
+         'specular': np.array([1, 1, 1]), 'shininess': 100, 'reflection': 0.1},
         {'center': np.array([0, -5001, 0]), 'radius': 5000, 'ambient': np.array([0.5, 0.5, 0.5]), 'diffuse': np.array(
             [0.5, 0.5, 0.5]), 'specular': np.array([1, 1, 1]), 'shininess': 1000, 'reflection': 0}
     ]

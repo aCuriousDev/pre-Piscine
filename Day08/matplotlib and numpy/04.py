@@ -14,7 +14,7 @@ def plot_fct(func, start, end, title):
     plt.figure()
 
     # Plot the function
-    plt.plot(x, y)k
+    plt.plot(x, y)
 
     # Add title, labels, and grid
     plt.title(title)

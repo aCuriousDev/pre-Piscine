@@ -8,69 +8,78 @@ class RPGGame:
         self.root = root
         root.title("Auto Clicker RPG")
 
+        # Initialize game attributes and UI elements
+        self.score_var = tk.StringVar()
+        self.health_var = tk.StringVar()
+        self.life_potion_var = tk.StringVar()
+        self.shield_potion_var = tk.StringVar()
+
+        self.setup_ui()
+
         # Initialize game attributes
         self.score = 0
         self.health = 100
-        self.shield_potion = 0
-        self.life_potion = 0
+        self.shield_potion = 1
+        self.life_potion = 1
         self.shield_active = False
 
-        # Set up the game interface
-        self.retry_game()
+        self.update_labels()
 
-        # ASCII Art Animation
+        # Start the animation and money increment
+        self.root.after(250, self.update_animation)
+        self.root.after(5000, self.increment_money)
 
     def setup_ui(self):
+        # ASCII Art Animation
         self.animation_frames = [
-            """
+            '''
             O
             /|\\
             / \\
         ---*--*----*---
-    """,
-            """
+    ''',
+            '''
             O
               |  
              |\\
         ----*--*----*--
-    """,
-            """
+    ''',
+            '''
             O
             /|\\
              /| 
         -----*--*----*-
-    """,
-            """
+    ''',
+            '''
             O
               |  
              /\\ 
         ------*--*----*
-    """,
-            """
+    ''',
+            '''
             O
             /|\\
              |\\
         *----*--*------
-    """,
-            """
+    ''',
+            '''
             O
               |  
              /| 
         -*----*--*-----
-    """,
-            """
+    ''',
+            '''
             O
             /|\\
              /\\ 
         --*----*--*----
-    """,
-            """
+    ''',
+            '''
             O
               |  
              |\\
         ---*----*--*---
-    """,
-
+    ''',
         ]
 
         self.current_frame = 0
@@ -78,12 +87,10 @@ class RPGGame:
             self.root, text=self.animation_frames[self.current_frame], font=("Courier", 10))
         self.animation_label.pack(pady=10)
 
-        self.score_label = tk.Label(
-            self.root, text="Money: " + str(self.score))
+        self.score_label = tk.Label(self.root, textvariable=self.score_var)
         self.score_label.pack(pady=10)
 
-        self.health_label = tk.Label(
-            self.root, text="Health: " + str(self.health))
+        self.health_label = tk.Label(self.root, textvariable=self.health_var)
         self.health_label.pack(pady=10)
 
         # Inventory
@@ -91,11 +98,11 @@ class RPGGame:
         self.inventory_label.pack(pady=10)
 
         self.life_potion_label = tk.Label(
-            self.root, text="Life Potions: " + str(self.life_potion))
+            self.root, textvariable=self.life_potion_var)
         self.life_potion_label.pack(pady=5)
 
         self.shield_potion_label = tk.Label(
-            self.root, text="Shield Potions: " + str(self.shield_potion))
+            self.root, textvariable=self.shield_potion_var)
         self.shield_potion_label.pack(pady=5)
 
         # Buttons
@@ -111,9 +118,6 @@ class RPGGame:
         self.retry_button.pack(pady=10)
         self.retry_button.config(state="disabled")
 
-        self.root.after(500, self.update_animation)  # Start the animation
-        self.root.after(10000, self.increment_money)
-
     def update_animation(self):
         self.current_frame = (self.current_frame +
                               1) % len(self.animation_frames)
@@ -122,44 +126,40 @@ class RPGGame:
         self.root.after(500, self.update_animation)
 
     def increment_money(self):
-        self.score += random.randint(1, 5)
+        self.score += random.randint(5, 10)
         self.update_labels()
-        self.root.after(10000, self.increment_money)
+        self.root.after(6000, self.increment_money)
 
     def update_labels(self):
-        self.score_label.config(text="Money: " + str(self.score))
-        self.health_label.config(text="Health: " + str(self.health))
-        self.life_potion_label.config(
-            text="Life Potions: " + str(self.life_potion))
-        self.shield_potion_label.config(
-            text="Shield Potions: " + str(self.shield_potion))
+        self.score_var.set("Money: " + str(self.score))
+        self.health_var.set("Health: " + str(self.health))
+        self.life_potion_var.set("Life Potions: " + str(self.life_potion))
+        self.shield_potion_var.set(
+            "Shield Potions: " + str(self.shield_potion))
 
     def game_over(self):
         if self.health <= 0:
             self.fight_button.config(state="disabled")
             self.shop_button.config(state="disabled")
             self.retry_button.config(state="normal")
-            game_over_label = tk.Label(
-                self.root, text="Game Over!", font=("Arial", 24), fg="red")
-            game_over_label.pack(pady=20)
+            tk.Label(self.root, text="Game Over!", font=(
+                "Arial", 24), fg="red").pack(pady=20)
 
     def retry_game(self):
-        attributes_to_destroy = [
-            'animation_label',
-            'score_label',
-            'health_label',
-            'life_potion_label',
-            'shield_potion_label',
-            'fight_button',
-            'shop_button',
-            'retry_button'
-        ]
+        # Destroy existing widgets
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
-        for attribute in attributes_to_destroy:
-            if hasattr(self, attribute):
-                getattr(self, attribute).destroy()
+        # Reset game attributes
+        self.score = 0
+        self.health = 100
+        self.shield_potion = 0
+        self.life_potion = 0
+        self.shield_active = False
 
+        # Set up the game interface again
         self.setup_ui()
+        self.update_labels()
 
     def fight(self):
         if not self.shield_active:
@@ -170,7 +170,7 @@ class RPGGame:
         else:
             self.shield_active = False
 
-        reward = random.randint(10, 50)
+        reward = random.randint(10, 100)
         self.score += reward
 
         potion_chance = random.random()
