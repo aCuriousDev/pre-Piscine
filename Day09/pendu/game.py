@@ -33,7 +33,7 @@ class HangmanGame:
             words = f.readlines()
         self.word_to_guess = random.choice(words).strip().lower()
 
-    def play(self)
+    def play(self):
         self.start_time = time.time()
         while self.attempts > 0:
             display_word = ''.join(
